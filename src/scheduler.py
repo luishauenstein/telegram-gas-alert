@@ -4,6 +4,7 @@ import telebot
 from sqlalchemy import create_engine, text
 
 load_dotenv()  # load .env files as env vars
+TELEGRAM_API_KEY = os.environ["TELEGRAM_API_KEY"]
 
 # postgres connection
 postgres_url_string = "postgresql://postgres@localhost:5432/telegram-gas-alert"
@@ -15,9 +16,7 @@ with engine.connect() as conn:
         print(row)
 
 
-# telegram servers connection
-API_TOKEN = os.environ["TELEGRAM_API_KEY"]
-bot = telebot.TeleBot(API_TOKEN)
+bot = telebot.TeleBot(TELEGRAM_API_KEY)
 
 # Handle '/start' and '/help'
 @bot.message_handler(commands=["help", "start"])

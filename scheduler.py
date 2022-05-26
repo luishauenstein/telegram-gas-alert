@@ -1,15 +1,19 @@
 from dotenv import load_dotenv
 import os
 import telebot
-import sqlalchemy
+from sqlalchemy import create_engine, text
 
 load_dotenv()  # load .env files as env vars
 
 # postgres connection
-engine = sqlalchemy.create_engine(
-    "postgresql://user@localhost:5432", echo=True, future=True
-)
-print(engine)
+postgres_url_string = "postgresql://postgres@localhost:5432/telegram-gas-alert"
+engine = create_engine(postgres_url_string, echo=False, future=True)
+
+with engine.connect() as conn:
+    result = conn.execute(text("SELECT * FROM active_alerts"))
+    for row in result:
+        print(row)
+
 
 # telegram servers connection
 API_TOKEN = os.environ["TELEGRAM_API_KEY"]

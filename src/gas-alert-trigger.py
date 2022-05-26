@@ -48,6 +48,11 @@ def main():
             # 1. trigger alert
             # 2. update cooldown_expired_timestamp
 
+            # def send_message():
+            # chat_id = 1442097388
+            # bot.send_message(chat_id, "The first message wow")
+            # send_message()
+
 
 if __name__ == "__main__":
     main()

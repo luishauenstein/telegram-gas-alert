@@ -10,12 +10,6 @@ TELEGRAM_API_KEY = os.environ["TELEGRAM_API_KEY"]
 postgres_url_string = "postgresql://postgres@localhost:5432/telegram-gas-alert"
 engine = create_engine(postgres_url_string, echo=False, future=True)
 
-with engine.connect() as conn:
-    result = conn.execute(text("SELECT * FROM active_alerts"))
-    for row in result:
-        print(row)
-
-
 bot = telebot.TeleBot(TELEGRAM_API_KEY)
 
 # Handle '/start' and '/help'
@@ -28,10 +22,4 @@ def send_welcome(message):
     bot.reply_to(message, response)
 
 
-# def send_message():
-#    chat_id = 1442097388
-#    bot.send_message(chat_id, "The first message wow")
-# send_message()
-
-
-# bot.infinity_polling()
+bot.infinity_polling()

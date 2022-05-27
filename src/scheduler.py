@@ -35,6 +35,9 @@ def send_welcome_help(message):
         "setalert",
         "set-alert",
         "set_alert",
+        "createalert",
+        "create-alert",
+        "create_alert",
     ]
 )
 def handle_set_alert_command(message):

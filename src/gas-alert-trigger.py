@@ -1,6 +1,6 @@
-import logging
 from dotenv import load_dotenv
 import os
+import telebot
 import requests
 from operator import and_
 from sqlalchemy import create_engine, select
@@ -14,10 +14,13 @@ def main():
 
     load_dotenv()  # load .env files as env vars
     ETHERSCAN_API_KEY = os.environ["ETHERSCAN_API_KEY"]
+    TELEGRAM_API_KEY = os.environ["TELEGRAM_API_KEY"]
 
     # postgres connection
     postgres_url_string = "postgresql://postgres@localhost:5432/telegram-gas-alert"
     engine = create_engine(postgres_url_string, echo=False, future=True)
+
+    bot = telebot.TeleBot(TELEGRAM_API_KEY)
 
     current_timestamp = time.time()
 
@@ -37,7 +40,7 @@ def main():
     stmt = select(Alert).where(
         and_(
             Alert.cooldown_expired_timestamp <= current_timestamp,
-            Alert.gas_threshold_gwei <= current_gas,
+            Alert.gas_threshold_gwei >= current_gas,
         )
     )
     with Session(engine) as session:
@@ -45,13 +48,22 @@ def main():
             print(
                 f"{row.Alert.alert_id} {row.Alert.gas_threshold_gwei} {row.Alert.cooldown_expired_timestamp}"
             )
-            # 1. trigger alert
-            # 2. update cooldown_expired_timestamp
 
-            # def send_message():
-            # chat_id = 1442097388
-            # bot.send_message(chat_id, "The first message wow")
-            # send_message()
+            try:
+                # 1. trigger alert
+                message = (
+                    f"Gas alert triggered! ⛽\nCurrent gas price: *{current_gas} Gwei*"
+                )
+                bot.send_message(
+                    row.Alert.telegram_chat_id, message, parse_mode="Markdown"
+                )
+                # 2. update cooldown_expired_timestamp
+                row.Alert.cooldown_expired_timestamp = (
+                    time.time() + row.Alert.cooldown_seconds
+                )
+                session.commit()
+            except Exception as err:
+                print(err)
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 import os
 import telebot
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 
 from AlertSetup import AlertSetup
 
@@ -49,7 +49,11 @@ def handle_set_alert_command(message):
         current_alert_setups[chat_id].gas_threshold_gwei,
         current_alert_setups[chat_id].cooldown_seconds,
     )
-    bot.reply_to(message, "message received")
+    bot.reply_to(
+        message,
+        "message received",
+        reply_markup=telebot.types.ForceReply(input_field_placeholder="Gas price"),
+    )
 
 
 bot.infinity_polling()

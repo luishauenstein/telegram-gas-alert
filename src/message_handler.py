@@ -4,7 +4,7 @@ import telebot
 
 from AlertSetup import AlertSetup
 from reply_handler import handle_reply
-from db_updater import write_alert_to_db
+from db_updater import check_and_write_alert_to_db
 import global_variables as glb
 
 load_dotenv()  # load .env files as env vars
@@ -50,12 +50,7 @@ def handle_set_alert_command(message):
     except:
         pass
     handle_reply(bot, glb.current_alert_setups[chat_id])
-    if (
-        glb.current_alert_setups[chat_id].cooldown_seconds != None
-        and glb.current_alert_setups[chat_id].gas_threshold_gwei != None
-    ):
-        write_alert_to_db(glb.current_alert_setups[chat_id])
-        glb.current_alert_setups.pop(chat_id)
+    check_and_write_alert_to_db(glb.current_alert_setups[chat_id])
 
 
 # handle digit input (for specifying gas and cooldown)
@@ -70,13 +65,7 @@ def handle_message(message):
     elif glb.current_alert_setups[chat_id].cooldown_seconds == None:
         glb.current_alert_setups[chat_id].try_parse_cooldown(message.text)
     handle_reply(bot, glb.current_alert_setups[chat_id])
-    # if everything is filled in
-    if (
-        glb.current_alert_setups[chat_id].cooldown_seconds != None
-        and glb.current_alert_setups[chat_id].gas_threshold_gwei != None
-    ):
-        write_alert_to_db(glb.current_alert_setups[chat_id])
-        glb.current_alert_setups.pop(chat_id)
+    check_and_write_alert_to_db(glb.current_alert_setups[chat_id])
 
 
 bot.infinity_polling()

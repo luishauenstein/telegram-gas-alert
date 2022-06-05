@@ -27,4 +27,3 @@ def handle_reply(bot, alert):
     # user has entered both
     else:
         bot.send_message(alert.chat_id, "Awesome, alert has been set up!")
-        print("set up alert")

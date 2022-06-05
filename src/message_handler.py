@@ -3,7 +3,6 @@ import os
 import telebot
 
 from AlertSetup import AlertSetup
-from reply_handler import handle_reply
 from db_updater import check_and_write_alert_to_db
 import global_variables as glb
 
@@ -49,7 +48,7 @@ def handle_set_alert_command(message):
         glb.current_alert_setups[chat_id].try_parse_cooldown(user_input[2])
     except:
         pass
-    handle_reply(bot, glb.current_alert_setups[chat_id])
+    glb.current_alert_setups[chat_id].handle_reply(bot)
     check_and_write_alert_to_db(glb.current_alert_setups[chat_id])
 
 
@@ -64,7 +63,7 @@ def handle_message(message):
         glb.current_alert_setups[chat_id].try_parse_gas_threshold(message.text)
     elif glb.current_alert_setups[chat_id].cooldown_seconds == None:
         glb.current_alert_setups[chat_id].try_parse_cooldown(message.text)
-    handle_reply(bot, glb.current_alert_setups[chat_id])
+    glb.current_alert_setups[chat_id].handle_reply(bot)
     check_and_write_alert_to_db(glb.current_alert_setups[chat_id])
 
 

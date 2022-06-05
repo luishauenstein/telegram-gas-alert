@@ -1,3 +1,6 @@
+import telebot
+
+
 class AlertSetup:
     def __init__(self, chat_id, gas_threshold_gwei=None, cooldown_seconds=None):
         self.chat_id = chat_id
@@ -30,3 +33,30 @@ class AlertSetup:
             return cooldown_seconds
         except:
             return False
+
+    def handle_reply(self, bot: telebot.TeleBot):
+        # user has not entered gas threshold yet
+        if self.gas_threshold_gwei == None:
+            bot.send_message(
+                self.chat_id,
+                "Please enter your target gas price that you want to be alerted at (must be between 1 and 9999):",
+                reply_markup=telebot.types.ForceReply(
+                    input_field_placeholder="Gas threshold in Gwei (e.g. 15)"
+                ),
+            )
+            return 0
+
+        # user has not entered cooldown yet
+        elif self.cooldown_seconds == None:
+            bot.send_message(
+                self.chat_id,
+                "Please tell me how many hours should at least be between each alert (must be between 1 and 9999):",
+                reply_markup=telebot.types.ForceReply(
+                    input_field_placeholder="Alert cooldown in hours (e.g. 3)"
+                ),
+            )
+            return 0
+
+        # user has entered both
+        else:
+            bot.send_message(self.chat_id, "Awesome, alert has been set up!")

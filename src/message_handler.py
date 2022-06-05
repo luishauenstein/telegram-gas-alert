@@ -44,16 +44,47 @@ def handle_set_alert_command(message):
     chat_id = message.chat.id
     user_input = message.text.split()[:3]
     current_alert_setups[chat_id] = AlertSetup(chat_id)
+    try:
+        current_alert_setups[chat_id].try_parse_gas_threshold(user_input[1])
+    except:
+        pass
+    try:
+        current_alert_setups[chat_id].try_parse_cooldown(user_input[2])
+    except:
+        pass
+    if current_alert_setups[chat_id].gas_threshold_gwei == None:
+        bot.send_message(
+            chat_id,
+            "Please enter your target gas price that you want to be alerted at (must be between 1 and 9999):",
+            reply_markup=telebot.types.ForceReply(
+                input_field_placeholder="Gas threshold in Gwei (e.g. 15)"
+            ),
+        )
+        return 0
+    elif current_alert_setups[chat_id].cooldown_seconds == None:
+        bot.send_message(
+            chat_id,
+            "Please tell me how many hours should at least be between each alert: (must be between 1 and 9999",
+            reply_markup=telebot.types.ForceReply(
+                input_field_placeholder="Alert cooldown in hours (e.g. 3)"
+            ),
+        )
+        return 0
+    else:
+        bot.send_message(chat_id, "Awesome, alert has been set up!")
+        print("set up alert")
+
     print(
         current_alert_setups[chat_id].chat_id,
         current_alert_setups[chat_id].gas_threshold_gwei,
         current_alert_setups[chat_id].cooldown_seconds,
     )
-    bot.reply_to(
-        message,
-        "message received",
-        reply_markup=telebot.types.ForceReply(input_field_placeholder="Gas price"),
-    )
+
+
+# handle digit input (for specifying gas and cooldown)
+@bot.message_handler(regexp="SOME_REGEXP")
+def handle_message(message):
+    pass
 
 
 bot.infinity_polling()

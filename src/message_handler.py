@@ -14,13 +14,7 @@ bot = telebot.TeleBot(TELEGRAM_API_KEY)
 # Handle '/start' and '/help'
 @bot.message_handler(commands=["help", "start"])
 def send_welcome_help(message):
-    response = f"""
-        Hi there! \n
-        Following commands are available: \n \n
-        `/gas-alert [price Gwei] [cooldown hours]` to set an alert \n
-        `/show-alerts` to display and delete alerts \n
-        `/about` to get info about this bot
-    """
+    response = "Hi there!\nFollowing commands are available:\n\n`/gas-alert [price Gwei] [cooldown hours]` to set an alert\n`/show-alerts` to display and delete alerts\n`/about` to get info about this bot"
     bot.send_message(message.chat.id, response, parse_mode="Markdown")
 
 
@@ -29,10 +23,8 @@ def send_welcome_help(message):
 def handle_about(message):
     bot.send_message(
         message.chat.id,
-        """
-        Created in 2022 by [Luis](https://twitter.com/luishauenstein). \n
-        You can find the code on [GitHub](https://github.com/luishauenstein/telegram-gas-alert).
-        """,
+        "Created in 2022 by [Luis](https://twitter.com/luishauenstein).\nYou can find the code on [GitHub](https://github.com/luishauenstein/telegram-gas-alert).",
+        disable_web_page_preview=True,
         parse_mode="Markdown",
     )
 
@@ -67,7 +59,6 @@ def handle_set_alert_command(message):
 @bot.message_handler(content_types=["text"])
 def handle_message(message):
     chat_id = message.chat.id
-    alert: AlertSetup = glb.current_alert_setups[chat_id]
     if chat_id not in glb.current_alert_setups:
         bot.send_message(
             chat_id,
@@ -75,7 +66,8 @@ def handle_message(message):
             parse_mode="Markdown",
         )
         return 0
-    elif alert.gas_threshold_gwei == None:
+    alert: AlertSetup = glb.current_alert_setups[chat_id]
+    if alert.gas_threshold_gwei == None:
         alert.try_parse_gas_threshold(message.text)
     elif alert.cooldown_seconds == None:
         alert.try_parse_cooldown(message.text)

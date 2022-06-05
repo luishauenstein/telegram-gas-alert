@@ -1,17 +1,14 @@
 from dotenv import load_dotenv
 import os
 import telebot
-from sqlalchemy import create_engine
 
 from AlertSetup import AlertSetup
 from reply_handler import handle_reply
+from db_updater import write_alert_to_db
 
 load_dotenv()  # load .env files as env vars
 TELEGRAM_API_KEY = os.environ["TELEGRAM_API_KEY"]
 
-# postgres connection
-postgres_url_string = "postgresql://postgres@localhost:5432/telegram-gas-alert"
-engine = create_engine(postgres_url_string, echo=False, future=True)
 
 bot = telebot.TeleBot(TELEGRAM_API_KEY)
 
@@ -54,12 +51,33 @@ def handle_set_alert_command(message):
     except:
         pass
     handle_reply(bot, current_alert_setups[chat_id])
+    if (
+        current_alert_setups[chat_id].cooldown_seconds != None
+        and current_alert_setups[chat_id].gas_threshold_gwei != None
+    ):
+        write_alert_to_db(current_alert_setups[chat_id])
+        current_alert_setups.pop(chat_id)
 
 
 # handle digit input (for specifying gas and cooldown)
-@bot.message_handler(regexp="SOME_REGEXP")
+@bot.message_handler(content_types=["text"])
 def handle_message(message):
-    pass
+    chat_id = message.chat.id
+    if chat_id not in current_alert_setups:
+        bot.send_message(chat_id, "Welcome! Please use /help or /start to get started.")
+        return 0
+    elif current_alert_setups[chat_id].gas_threshold_gwei == None:
+        current_alert_setups[chat_id].try_parse_gas_threshold(message.text)
+    elif current_alert_setups[chat_id].cooldown_seconds == None:
+        current_alert_setups[chat_id].try_parse_cooldown(message.text)
+    handle_reply(bot, current_alert_setups[chat_id])
+    # if everything is filled in
+    if (
+        current_alert_setups[chat_id].cooldown_seconds != None
+        and current_alert_setups[chat_id].gas_threshold_gwei != None
+    ):
+        write_alert_to_db(current_alert_setups[chat_id])
+        current_alert_setups.pop(chat_id)
 
 
 bot.infinity_polling()

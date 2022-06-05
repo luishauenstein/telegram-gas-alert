@@ -17,11 +17,24 @@ def send_welcome_help(message):
     response = f"""
         Hi there! \n
         Following commands are available: \n \n
-        /gas-alert [price Gwei] [cooldown hours] to set an alert \n
-        /show-alerts to display and delete alerts \n
-        /about to get info about this bot
+        `/gas-alert [price Gwei] [cooldown hours]` to set an alert \n
+        `/show-alerts` to display and delete alerts \n
+        `/about` to get info about this bot
     """
-    bot.reply_to(message, response)
+    bot.send_message(message.chat.id, response, parse_mode="Markdown")
+
+
+# Handle '/info' and '/about'
+@bot.message_handler(commands=["about", "info"])
+def handle_about(message):
+    bot.send_message(
+        message.chat.id,
+        """
+        Created in 2022 by [Luis](https://twitter.com/luishauenstein). \n
+        You can find the code on [GitHub](https://github.com/luishauenstein/telegram-gas-alert).
+        """,
+        parse_mode="Markdown",
+    )
 
 
 # Handle '/gas-alert' (allows user to create new alert)
@@ -56,7 +69,11 @@ def handle_message(message):
     chat_id = message.chat.id
     alert: AlertSetup = glb.current_alert_setups[chat_id]
     if chat_id not in glb.current_alert_setups:
-        bot.send_message(chat_id, "Welcome! Please use /help or /start to get started.")
+        bot.send_message(
+            chat_id,
+            "Welcome! Please use `/help` or `/start` to get started.",
+            parse_mode="Markdown",
+        )
         return 0
     elif alert.gas_threshold_gwei == None:
         alert.try_parse_gas_threshold(message.text)

@@ -1,6 +1,9 @@
 import telebot
 
 
+import global_variables as glb
+
+
 class AlertSetup:
     def __init__(self, chat_id, gas_threshold_gwei=None, cooldown_seconds=None):
         self.chat_id = chat_id
@@ -34,6 +37,7 @@ class AlertSetup:
         except:
             return False
 
+    # handles a reply from the user after being prompted for input
     def handle_reply(self, bot: telebot.TeleBot):
         # user has not entered gas threshold yet
         if self.gas_threshold_gwei == None:
@@ -60,3 +64,8 @@ class AlertSetup:
         # user has entered both
         else:
             bot.send_message(self.chat_id, "Awesome, alert has been set up!")
+
+    def check_and_write_alert_to_db(self):
+        if self.cooldown_seconds != None and self.gas_threshold_gwei != None:
+            print("write alert to db")
+            glb.current_alert_setups.pop(self.chat_id)

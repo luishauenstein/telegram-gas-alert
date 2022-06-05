@@ -3,7 +3,6 @@ import os
 import telebot
 
 from AlertSetup import AlertSetup
-from db_updater import check_and_write_alert_to_db
 import global_variables as glb
 
 load_dotenv()  # load .env files as env vars
@@ -39,32 +38,33 @@ def send_welcome_help(message):
 def handle_set_alert_command(message):
     chat_id = message.chat.id
     user_input = message.text.split()[:3]
-    glb.current_alert_setups[chat_id] = AlertSetup(chat_id)
+    alert = glb.current_alert_setups[chat_id] = AlertSetup(chat_id)
     try:
-        glb.current_alert_setups[chat_id].try_parse_gas_threshold(user_input[1])
+        alert.try_parse_gas_threshold(user_input[1])
     except:
         pass
     try:
-        glb.current_alert_setups[chat_id].try_parse_cooldown(user_input[2])
+        alert.try_parse_cooldown(user_input[2])
     except:
         pass
-    glb.current_alert_setups[chat_id].handle_reply(bot)
-    check_and_write_alert_to_db(glb.current_alert_setups[chat_id])
+    alert.handle_reply(bot)
+    alert.check_and_write_alert_to_db()
 
 
 # handle digit input (for specifying gas and cooldown)
 @bot.message_handler(content_types=["text"])
 def handle_message(message):
     chat_id = message.chat.id
+    alert: AlertSetup = glb.current_alert_setups[chat_id]
     if chat_id not in glb.current_alert_setups:
         bot.send_message(chat_id, "Welcome! Please use /help or /start to get started.")
         return 0
-    elif glb.current_alert_setups[chat_id].gas_threshold_gwei == None:
-        glb.current_alert_setups[chat_id].try_parse_gas_threshold(message.text)
-    elif glb.current_alert_setups[chat_id].cooldown_seconds == None:
-        glb.current_alert_setups[chat_id].try_parse_cooldown(message.text)
-    glb.current_alert_setups[chat_id].handle_reply(bot)
-    check_and_write_alert_to_db(glb.current_alert_setups[chat_id])
+    elif alert.gas_threshold_gwei == None:
+        alert.try_parse_gas_threshold(message.text)
+    elif alert.cooldown_seconds == None:
+        alert.try_parse_cooldown(message.text)
+    alert.handle_reply(bot)
+    alert.check_and_write_alert_to_db()
 
 
 bot.infinity_polling()

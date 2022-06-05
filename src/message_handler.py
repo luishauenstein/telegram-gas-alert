@@ -29,6 +29,22 @@ def handle_about(message):
     )
 
 
+# Handle '/show-alerts'
+@bot.message_handler(
+    commands=[
+        "showalerts",
+        "showalert",
+        "show-alerts",
+        "show-alert",
+        "show_alerts",
+        "show_alert",
+    ]
+)
+def handle_show_alerts(message):
+    chat_id = message.chat.id
+    print("show alerts")
+
+
 # Handle '/gas-alert' (allows user to create new alert)
 @bot.message_handler(
     commands=[

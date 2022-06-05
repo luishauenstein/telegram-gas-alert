@@ -16,7 +16,10 @@ bot = telebot.TeleBot(TELEGRAM_API_KEY)
 def send_welcome_help(message):
     response = f"""
         Hi there! \n
-        Your chat id: {message.chat.id} \n
+        Following commands are available: \n \n
+        /gas-alert [price Gwei] [cooldown hours] to set an alert \n
+        /show-alerts to display and delete alerts \n
+        /about to get info about this bot
     """
     bot.reply_to(message, response)
 

@@ -4,6 +4,7 @@ import telebot
 from sqlalchemy import create_engine
 
 from AlertSetup import AlertSetup
+from reply_handler import handle_reply
 
 load_dotenv()  # load .env files as env vars
 TELEGRAM_API_KEY = os.environ["TELEGRAM_API_KEY"]
@@ -52,33 +53,7 @@ def handle_set_alert_command(message):
         current_alert_setups[chat_id].try_parse_cooldown(user_input[2])
     except:
         pass
-    if current_alert_setups[chat_id].gas_threshold_gwei == None:
-        bot.send_message(
-            chat_id,
-            "Please enter your target gas price that you want to be alerted at (must be between 1 and 9999):",
-            reply_markup=telebot.types.ForceReply(
-                input_field_placeholder="Gas threshold in Gwei (e.g. 15)"
-            ),
-        )
-        return 0
-    elif current_alert_setups[chat_id].cooldown_seconds == None:
-        bot.send_message(
-            chat_id,
-            "Please tell me how many hours should at least be between each alert: (must be between 1 and 9999",
-            reply_markup=telebot.types.ForceReply(
-                input_field_placeholder="Alert cooldown in hours (e.g. 3)"
-            ),
-        )
-        return 0
-    else:
-        bot.send_message(chat_id, "Awesome, alert has been set up!")
-        print("set up alert")
-
-    print(
-        current_alert_setups[chat_id].chat_id,
-        current_alert_setups[chat_id].gas_threshold_gwei,
-        current_alert_setups[chat_id].cooldown_seconds,
-    )
+    handle_reply(bot, current_alert_setups[chat_id])
 
 
 # handle digit input (for specifying gas and cooldown)

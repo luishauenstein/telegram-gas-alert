@@ -39,14 +39,10 @@ def handle_set_alert_command(message):
     chat_id = message.chat.id
     user_input = message.text.split()[:3]
     alert = glb.current_alert_setups[chat_id] = AlertSetup(chat_id)
-    try:
+    if len(user_input) >= 2:
         alert.try_parse_gas_threshold(user_input[1])
-    except:
-        pass
-    try:
+    if len(user_input) >= 3:
         alert.try_parse_cooldown(user_input[2])
-    except:
-        pass
     alert.handle_reply(bot)
     alert.check_and_write_alert_to_db()
 

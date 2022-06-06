@@ -70,6 +70,24 @@ def handle_show_alerts(message):
     )
 
 
+# handle callback query after user clicks on an alert under '/show-alerts'
+@bot.callback_query_handler(func=lambda call: True)
+def delete_callback(call):
+    alert_id = call.data
+    chat_id = call.message.chat.id
+    # drop selected alert
+    with Session(engine) as session:
+        try:
+            alert_to_delete = session.get(Alert, alert_id)
+            session.delete(alert_to_delete)
+            session.commit()
+            bot.send_message(chat_id, "Alert deleted.")
+        except Exception as err:
+            print(err)
+    # inform user about deleted alert
+    bot.answer_callback_query(call.id)
+
+
 # Handle '/gas-alert' (allows user to create new alert)
 @bot.message_handler(
     commands=[

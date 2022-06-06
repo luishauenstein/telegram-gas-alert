@@ -1,6 +1,3 @@
-from dotenv import load_dotenv
-import os
-import telebot
 import requests
 from operator import and_
 from sqlalchemy import select
@@ -12,17 +9,10 @@ import global_variables as glb
 
 
 def main():
-
-    load_dotenv()  # load .env files as env vars
-    ETHERSCAN_API_KEY = os.environ["ETHERSCAN_API_KEY"]
-    TELEGRAM_API_KEY = os.environ["TELEGRAM_API_KEY"]
-
-    bot = telebot.TeleBot(TELEGRAM_API_KEY)
-
     current_timestamp = time.time()
 
     # get current gas price from Etherscan
-    etherscan_endpoint = f"https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey={ETHERSCAN_API_KEY}"
+    etherscan_endpoint = f"https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey={glb.ETHERSCAN_API_KEY}"
     try:
         response = requests.get(etherscan_endpoint)
         response.raise_for_status()
@@ -43,16 +33,14 @@ def main():
     with Session(glb.db_engine) as session:
         for row in session.execute(stmt):
             alert: Alert = row.Alert
-            print(
-                f"{alert.alert_id} {alert.gas_threshold_gwei} {alert.cooldown_expired_timestamp}"
-            )
-
             try:
                 # 1. trigger alert
                 message = (
                     f"Gas alert triggered! ⛽\nCurrent gas price: *{current_gas} Gwei*"
                 )
-                bot.send_message(alert.telegram_chat_id, message, parse_mode="Markdown")
+                glb.bot.send_message(
+                    alert.telegram_chat_id, message, parse_mode="Markdown"
+                )
                 # 2. update cooldown_expired_timestamp
                 alert.cooldown_expired_timestamp = time.time() + alert.cooldown_seconds
                 session.commit()

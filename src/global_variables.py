@@ -9,7 +9,7 @@ import telebot
 current_alert_setups = {}
 
 # postgres connection
-postgres_url_string = "postgresql://postgres@localhost:5432/telegram-gas-alert"
+postgres_url_string = "postgresql://postgres@localhost:5432/postgres"
 db_engine = create_engine(postgres_url_string, echo=False, future=True)
 
 # load env vars

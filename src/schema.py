@@ -5,7 +5,7 @@ import global_variables as glb
 
 Base = declarative_base()
 
-
+# db schema
 class Alert(Base):
     __tablename__ = "active_alerts"
     alert_id = Column(BigInteger, primary_key=True)

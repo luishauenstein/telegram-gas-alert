@@ -1,14 +1,10 @@
 import telebot
 import time
-from sqlalchemy import create_engine
+
 from sqlalchemy.orm import Session
 
 import global_variables as glb
 from schema import Alert
-
-# postgres connection
-postgres_url_string = "postgresql://postgres@localhost:5432/telegram-gas-alert"
-engine = create_engine(postgres_url_string, echo=False, future=True)
 
 
 class AlertSetup:
@@ -81,7 +77,7 @@ class AlertSetup:
                 cooldown_seconds=self.cooldown_seconds,
                 cooldown_expired_timestamp=time.time(),
             )
-            with Session(engine) as session:
+            with Session(glb.db_engine) as session:
                 session.add(new_alert)
                 session.commit()
             # pop alert from the "current_alert_setups" dict after alert has been inserted into db

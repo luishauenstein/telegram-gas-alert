@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import os
 import telebot
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
-from sqlalchemy import create_engine, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from AlertSetup import AlertSetup
@@ -11,10 +11,6 @@ import global_variables as glb
 
 load_dotenv()  # load .env files as env vars
 TELEGRAM_API_KEY = os.environ["TELEGRAM_API_KEY"]
-
-# postgres connection
-postgres_url_string = "postgresql://postgres@localhost:5432/telegram-gas-alert"
-engine = create_engine(postgres_url_string, echo=False, future=True)
 
 
 bot = telebot.TeleBot(TELEGRAM_API_KEY)
@@ -55,7 +51,7 @@ def handle_show_alerts(message):
         Alert.telegram_chat_id <= chat_id,
     )
     active_alerts_inline_keyboard = []
-    with Session(engine) as session:
+    with Session(glb.db_engine) as session:
         for row in session.execute(stmt):
             alert: Alert = row.Alert
             cooldown_hours = alert.cooldown_seconds // 3600
@@ -76,7 +72,7 @@ def delete_callback(call):
     alert_id = call.data
     chat_id = call.message.chat.id
     # drop selected alert
-    with Session(engine) as session:
+    with Session(glb.db_engine) as session:
         try:
             alert_to_delete = session.get(Alert, alert_id)
             session.delete(alert_to_delete)

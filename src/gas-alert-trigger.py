@@ -3,11 +3,12 @@ import os
 import telebot
 import requests
 from operator import and_
-from sqlalchemy import create_engine, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 import time
 
 from schema import Alert
+import global_variables as glb
 
 
 def main():
@@ -15,10 +16,6 @@ def main():
     load_dotenv()  # load .env files as env vars
     ETHERSCAN_API_KEY = os.environ["ETHERSCAN_API_KEY"]
     TELEGRAM_API_KEY = os.environ["TELEGRAM_API_KEY"]
-
-    # postgres connection
-    postgres_url_string = "postgresql://postgres@localhost:5432/telegram-gas-alert"
-    engine = create_engine(postgres_url_string, echo=False, future=True)
 
     bot = telebot.TeleBot(TELEGRAM_API_KEY)
 
@@ -43,7 +40,7 @@ def main():
             Alert.gas_threshold_gwei >= current_gas,
         )
     )
-    with Session(engine) as session:
+    with Session(glb.db_engine) as session:
         for row in session.execute(stmt):
             alert: Alert = row.Alert
             print(

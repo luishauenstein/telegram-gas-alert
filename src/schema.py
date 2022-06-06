@@ -1,11 +1,7 @@
-from sqlalchemy import create_engine, Column, Integer, BigInteger
+from sqlalchemy import Column, Integer, BigInteger
 from sqlalchemy.orm import declarative_base
 
-# postgres connection
-postgres_url_string = "postgresql://postgres@localhost:5432/telegram-gas-alert"
-engine = create_engine(postgres_url_string, echo=False, future=True)
-
-# schema
+import global_variables as glb
 
 Base = declarative_base()
 
@@ -19,4 +15,4 @@ class Alert(Base):
     cooldown_expired_timestamp = Column(BigInteger, nullable=False)
 
 
-Base.metadata.create_all(engine)
+Base.metadata.create_all(glb.db_engine)

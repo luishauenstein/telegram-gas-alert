@@ -45,8 +45,9 @@ def main():
     )
     with Session(engine) as session:
         for row in session.execute(stmt):
+            alert: Alert = row.Alert
             print(
-                f"{row.Alert.alert_id} {row.Alert.gas_threshold_gwei} {row.Alert.cooldown_expired_timestamp}"
+                f"{alert.alert_id} {alert.gas_threshold_gwei} {alert.cooldown_expired_timestamp}"
             )
 
             try:
@@ -54,13 +55,9 @@ def main():
                 message = (
                     f"Gas alert triggered! ⛽\nCurrent gas price: *{current_gas} Gwei*"
                 )
-                bot.send_message(
-                    row.Alert.telegram_chat_id, message, parse_mode="Markdown"
-                )
+                bot.send_message(alert.telegram_chat_id, message, parse_mode="Markdown")
                 # 2. update cooldown_expired_timestamp
-                row.Alert.cooldown_expired_timestamp = (
-                    time.time() + row.Alert.cooldown_seconds
-                )
+                alert.cooldown_expired_timestamp = time.time() + alert.cooldown_seconds
                 session.commit()
             except Exception as err:
                 print(err)

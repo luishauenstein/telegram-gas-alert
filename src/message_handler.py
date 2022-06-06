@@ -14,7 +14,7 @@ bot = telebot.TeleBot(TELEGRAM_API_KEY)
 # Handle '/start' and '/help'
 @bot.message_handler(commands=["help", "start"])
 def send_welcome_help(message):
-    response = "Hi there!\nFollowing commands are available:\n\n`/gas-alert [price Gwei] [cooldown hours]` to set an alert\n`/show-alerts` to display and delete alerts\n`/about` to get info about this bot"
+    response = "Hi there! 👋\nFollowing commands are available:\n\n`/gas-alert [price Gwei] [cooldown hours]` to set an alert\n`/show-alerts` to display and delete alerts\n`/about` to get info about this bot"
     bot.send_message(message.chat.id, response, parse_mode="Markdown")
 
 
@@ -42,7 +42,7 @@ def handle_about(message):
 )
 def handle_show_alerts(message):
     chat_id = message.chat.id
-    print("show alerts")
+    print("show alerts and offer option to delete")
 
 
 # Handle '/gas-alert' (allows user to create new alert)

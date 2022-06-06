@@ -1,12 +1,20 @@
 from dotenv import load_dotenv
 import os
 import telebot
+from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import Session
 
 from AlertSetup import AlertSetup
+from schema import Alert
 import global_variables as glb
 
 load_dotenv()  # load .env files as env vars
 TELEGRAM_API_KEY = os.environ["TELEGRAM_API_KEY"]
+
+# postgres connection
+postgres_url_string = "postgresql://postgres@localhost:5432/telegram-gas-alert"
+engine = create_engine(postgres_url_string, echo=False, future=True)
 
 
 bot = telebot.TeleBot(TELEGRAM_API_KEY)
@@ -42,7 +50,24 @@ def handle_about(message):
 )
 def handle_show_alerts(message):
     chat_id = message.chat.id
-    print("show alerts and offer option to delete")
+    # get active alerts from db
+    stmt = select(Alert).where(
+        Alert.telegram_chat_id <= chat_id,
+    )
+    active_alerts_inline_keyboard = []
+    with Session(engine) as session:
+        for row in session.execute(stmt):
+            alert: Alert = row.Alert
+            cooldown_hours = alert.cooldown_seconds // 3600
+            text = f"Price: {alert.gas_threshold_gwei} Gwei      Cooldown: {cooldown_hours}h"
+            active_alerts_inline_keyboard.append(
+                [InlineKeyboardButton(text=text, callback_data=alert.alert_id)]
+            )
+    bot.send_message(
+        chat_id,
+        "Your notices (Click on one to delete it):",
+        reply_markup=InlineKeyboardMarkup(active_alerts_inline_keyboard),
+    )
 
 
 # Handle '/gas-alert' (allows user to create new alert)

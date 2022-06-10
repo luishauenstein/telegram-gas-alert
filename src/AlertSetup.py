@@ -4,7 +4,7 @@ import time
 from sqlalchemy.orm import Session
 
 import global_variables as glb
-from schema import Alert
+from database_schema import Alert
 
 
 class AlertSetup:

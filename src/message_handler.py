@@ -3,7 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from AlertSetup import AlertSetup
-from schema import Alert
+from database_schema import Alert
 import global_variables as glb
 
 # Handle '/start' and '/help'

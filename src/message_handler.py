@@ -9,7 +9,7 @@ import global_variables as glb
 # Handle '/start' and '/help'
 @glb.bot.message_handler(commands=["help", "start"])
 def send_welcome_help(message):
-    response = "Hi there! 👋\nFollowing commands are available:\n\n`/gas-alert to get guided through the alert setup`\n`/gas-alert [price Gwei] [cooldown hours]` to set a quick alert\n`/show-alerts` to display and delete alerts\n`/about` to get info about this bot"
+    response = "Hi there! 👋\nFollowing commands are available:\n\n`/gas-alert` to get guided through the alert setup\n`/gas-alert [price Gwei] [cooldown hours]` to set a quick alert\n`/show-alerts` to display and delete alerts\n`/about` to get info about this bot"
     glb.bot.send_message(message.chat.id, response, parse_mode="Markdown")
 
 

@@ -52,7 +52,7 @@ def handle_show_alerts(message):
             )
     glb.bot.send_message(
         chat_id,
-        "Your notices (Click on one to delete it):",
+        "Your notices (click on one to delete it):",
         reply_markup=InlineKeyboardMarkup(active_alerts_inline_keyboard),
     )
 

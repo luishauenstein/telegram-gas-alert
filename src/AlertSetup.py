@@ -46,7 +46,7 @@ class AlertSetup:
         if self.gas_threshold_gwei == None:
             bot.send_message(
                 self.chat_id,
-                "Please enter your target gas price that you want to be alerted at (must be between 1 and 9999):",
+                "Please enter your target gas price that you want to be alerted at (must be between 1 and 9999 Gwei):",
                 reply_markup=telebot.types.ForceReply(
                     input_field_placeholder="Gas threshold in Gwei (e.g. 15)"
                 ),

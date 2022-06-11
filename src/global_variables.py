@@ -1,8 +1,8 @@
 # namespace for global variables (shared across modules)
+import os
 
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
-import os
 import telebot
 
 # load env vars

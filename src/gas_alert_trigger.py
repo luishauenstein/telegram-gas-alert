@@ -1,8 +1,10 @@
 import requests
+import time
 from operator import and_
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-import time
+
 
 from database_schema import Alert
 import global_variables as glb

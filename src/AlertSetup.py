@@ -1,6 +1,6 @@
-import telebot
 import time
 
+import telebot
 from sqlalchemy.orm import Session
 
 import global_variables as glb

@@ -3,7 +3,7 @@ import time
 from operator import and_
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 
 
 from database_schema import Alert
@@ -32,7 +32,8 @@ def main():
             Alert.gas_threshold_gwei >= current_gas,
         )
     )
-    with Session(glb.db_engine) as session:
+    Session = sessionmaker(glb.db_engine)
+    with Session() as session:
         for row in session.execute(stmt):
             alert: Alert = row.Alert
             try:

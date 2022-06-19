@@ -1,7 +1,8 @@
-# namespace for global variables (shared across modules)
+# general namespace for global variables (shared across modules)
 import os
 
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 import telebot
 
@@ -18,6 +19,7 @@ POSTGRES_PORT = os.environ["POSTGRES_PORT"]
 POSTGRES_DBNAME = os.environ["POSTGRES_DBNAME"]
 postgres_url_string = f"postgresql://{POSTGRES_USER}:{POSTGRES_PW}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DBNAME}"  # postgresql://[user[:password]@][netloc][:port][/dbname]
 db_engine = create_engine(postgres_url_string, echo=False, future=True)
+Session = sessionmaker(bind=db_engine)
 
 # set up telebot
 bot = telebot.TeleBot(TELEGRAM_API_KEY)

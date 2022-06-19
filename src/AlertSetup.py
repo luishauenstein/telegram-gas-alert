@@ -1,7 +1,6 @@
 import time
 
 import telebot
-from sqlalchemy.orm import sessionmaker
 
 import global_variables as glb
 from database_schema import Alert
@@ -77,8 +76,7 @@ class AlertSetup:
                 cooldown_seconds=self.cooldown_seconds,
                 cooldown_expired_timestamp=time.time(),
             )
-            Session = sessionmaker(glb.db_engine)
-            with Session() as session:
+            with glb.Session() as session:
                 session.add(new_alert)
                 session.commit()
             # pop alert from the "current_alert_setups" dict after alert has been inserted into db

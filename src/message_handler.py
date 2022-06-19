@@ -1,6 +1,5 @@
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 from sqlalchemy import select
-from sqlalchemy.orm import sessionmaker
 
 from AlertSetup import AlertSetup
 from database_schema import Alert
@@ -42,8 +41,7 @@ def handle_show_alerts(message):
         Alert.telegram_chat_id <= chat_id,
     )
     active_alerts_inline_keyboard = []
-    Session = sessionmaker(glb.db_engine)
-    with Session() as session:
+    with glb.Session() as session:
         for row in session.execute(stmt):
             alert: Alert = row.Alert
             cooldown_hours = alert.cooldown_seconds // 3600
@@ -64,8 +62,7 @@ def delete_callback(call):
     alert_id = call.data
     chat_id = call.message.chat.id
     # drop selected alert
-    Session = sessionmaker(glb.db_engine)
-    with Session() as session:
+    with glb.Session() as session:
         try:
             alert_to_delete = session.get(Alert, alert_id)
             session.delete(alert_to_delete)

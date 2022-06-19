@@ -1,4 +1,3 @@
-from requests import Session
 from telebot.types import InlineKeyboardButton, InlineKeyboardMarkup
 from sqlalchemy import select
 from sqlalchemy.orm import sessionmaker
